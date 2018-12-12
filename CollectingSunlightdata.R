@@ -61,7 +61,7 @@ library(jsonlite)
             sunset
             
             #Adding it to the list
-            sunsetList <- c(sunsetList, as.character(sunrise))  
+            sunsetList <- c(sunsetList, as.character(sunset))  
             sunsetList
             
                         
