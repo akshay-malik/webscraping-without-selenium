@@ -19,6 +19,7 @@ library(jsonlite)
     #lists to be collected
     sunriseList <- c()
     sunsetList <- c()
+    dateList <- c()
     
     #Function for looping through all years 
     # y - start year
@@ -39,36 +40,33 @@ library(jsonlite)
             returnFromApi <- fromJSON(api)
             
         #####Sunrise
-            risingDateTime <- paste(date, returnFromApi$results$sunrise, sep = " ")
-            risingDateTime
-            
-            # convert time to date-time format and adjusting by 5 hrs to change UTC to EST 
-            pulledsunrise <- as.POSIXct(risingDateTime, tz="EST") 
-            sunrise <- pulledsunrise - 5*60*60
-            sunrise
+            sunriseGMT<- paste(date, returnFromApi$results$sunrise, sep = " ")
+            sunriseGMT <- as.POSIXct(sunriseGMT,format='%Y-%m-%d %I:%M:%S %p', tz = "GMT")
+            sunriseEST <- format(sunriseGMT, tz="EST") 
+            sunriseTime <- substr(sunriseEST, 12, 21)
             
             #Adding it to the list
-            sunriseList <- c(sunriseList, as.character(sunrise))  
+            sunriseList <- c(sunriseList, sunriseTime)  
             sunriseList
             
         #####Sunset
-            settingDateTime <- paste(date, returnFromApi$results$sunrise, sep = " ")
-            settingDateTime
-            
-            # convert time to date-time format and adjusting by 5 hrs to change UTC to EST 
-            pulledsunset <- as.POSIXct(settingDateTime, tz="EST") 
-            sunset <- pulledsunrise - 5*60*60
-            sunset
+            sunsetGMT<- paste(date, returnFromApi$results$sunset, sep = " ")
+            sunsetGMT <- as.POSIXct(sunsetGMT,format='%Y-%m-%d %I:%M:%S %p', tz = "GMT")
+            sunsetEST <- format(sunsetGMT, tz="EST") 
+            sunsetTime <- substr(sunsetEST, 12, 21)
             
             #Adding it to the list
-            sunsetList <- c(sunsetList, as.character(sunset))  
+            sunsetList <- c(sunsetList, sunsetTime)  
             sunsetList
             
+        #####CompileDate   
+            dateList <- c(dateList, date)
                         
         }
     }
     
-    compiledata <- data.frame(sunriseList, sunsetList)
+    compiledata <- data.frame(dateList, sunriseList, sunsetList)
+    names(compiledata) <- c("Date", "Sunrise Time (EST)", "Sunset Time (EST)")
     return(compiledata)
   }
   
